@@ -1,23 +1,34 @@
-import React from 'react';
+import Axios from 'axios';
+import React, { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { LoginContext } from '../contexts/LoginContext';
+import { API_URL } from '../Constants';
 
 function Homepage() {
-
-    const loggedInUser = {
+    const [loggedInUser, setLoggedInUser] = useState({
         ccNumber: 0,
         ccName: "Dummy Card",
         userName: "Guest User",
         userId: "guest",
         availableRedeemPoints: 0,
         totalRewardsGained: 0
-    }
-    const isLoggedIn = false;
+    })
 
-    /**
-     * Replace the above login details with details from LoginContext
-     * 
-     */
+    const userLogInContext = useContext(LoginContext);
+    const isLoggedIn = userLogInContext.isLoggedIn
+
+    // Make sure it only retrieve user data once
+    useEffect(() => {
+        if (isLoggedIn) {
+            Axios.get(API_URL + '/ccuser/getuserbyuserid?userId=' + userLogInContext.loggedInUser.ccNumber).then(response => {
+
+                // updating the login context
+                setLoggedInUser(response.data.body)
+            })
+            console.log("here")
+        }
+      }, []);
+
 
     return (
         <div className="homepage container">
@@ -73,4 +84,4 @@ function Homepage() {
     );
 }
 
-export default Homepage; 
+export default Homepage;
