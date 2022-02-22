@@ -17,7 +17,7 @@ function LoginPage(props) {
     const [password, setPassword] = useState('')
 
     useEffect(() => {
-        console.log(setLoginUserDetails);
+        console.log("setLoginUserDetails is: "+ setLoginUserDetails);
         console.log(isLoggedIn);
 
 
@@ -45,7 +45,7 @@ function LoginPage(props) {
 
         await axios.post(API_URL + 'ccuser/login', loginDetail)
             .then(response => {
-                console.log(response);
+                console.log("the response is: "+ JSON.stringify(response));
                 setUserId('');
                 setPassword('');
                 // updating the login context
@@ -55,6 +55,8 @@ function LoginPage(props) {
 
             })
             .catch(error => {
+                alert("Wrong username or password, please try again");
+                history.push('/login');
                 if (error.response) {
                     console.log(error.response);
                 } else if (error.request) {
