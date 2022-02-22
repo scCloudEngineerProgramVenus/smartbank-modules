@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { API_URL } from '../../Constants';
 import CatalogueItem from './CatalogueItem';
@@ -8,6 +8,7 @@ function RewardCataloguePage() {
 
     const [catalogueList, setCatalogueList] = useState([]);
     const [catalogueListLoaded, setCatalogueListLoaded] = useState(false);
+
 
     const fetchCatalogueList = async () => {
 
@@ -35,9 +36,10 @@ function RewardCataloguePage() {
         fetchCatalogueList()
     }, []);
 
+
     return (
         <div className="reward-catalogue">
-            <h3><i className="fas fa-gift" style={{ color: 'green' }}></i>&nbsp;Welcome to Rewards Catalogue </h3>
+            <h3><i className="fas fa-gift" style={{color:'green'}}></i>&nbsp;Welcome to Rewards Catalogue </h3>
 
             <hr></hr>
             <div className="reward-catalogue">
@@ -46,24 +48,16 @@ function RewardCataloguePage() {
                     catalogueListLoaded ?
                         (
                             <div className="row" >
+                                {catalogueList.map(c => (
 
-                                <h6>Render the <i>CatalogueItem</i> Component</h6>
+                                    <div className="col-md-4" key={c.id}>
+                                        <CatalogueItem catalogue={c} />
+                                        
+                                        <br></br>
+                                    </div>
 
-                                {
-                                    catalogueList.map(c => (
 
-                                        <div className="col-md-4" key={c.id}>
-
-                                            {
-                                                /* 
-                                                    Call the Catalogue item component and pass the props into it.
-                                                */
-                                            }
-
-                                            <br></br>
-                                        </div>
-
-                                    ))
+                                ))
                                 }
                             </div>
                         ) :
@@ -73,6 +67,7 @@ function RewardCataloguePage() {
                             </div>
                         )
                 }
+
 
             </div>
 
