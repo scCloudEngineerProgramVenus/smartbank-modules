@@ -33,7 +33,7 @@ public class CCUserServiceImpl implements CCUserService {
 			message = "Failed to save user - "+user.getUserName();
 			throw new RecordNotCreatedException(message,e);
 		}
-		
+
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class CCUserServiceImpl implements CCUserService {
 
 	@Override
 	public CCUser getUserById(long id) throws RecordNotFoundException {
-		return null;
+		return this.ccUserRepo.findByccNumber(id);
 	}
 
 	@Override
