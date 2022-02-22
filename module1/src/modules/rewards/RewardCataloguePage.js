@@ -39,7 +39,7 @@ function RewardCataloguePage() {
 
     return (
         <div className="reward-catalogue">
-            <h3><i className="fas fa-gift" style={{ color: 'green' }}></i>&nbsp;Welcome to Rewards Catalogue </h3>
+            <h3><i className="fas fa-gift" style={{color:'green'}}></i>&nbsp;Welcome to Rewards Catalogue </h3>
 
             <hr></hr>
             <div className="reward-catalogue">
@@ -48,14 +48,10 @@ function RewardCataloguePage() {
                     catalogueListLoaded ?
                         (
                             <div className="row" >
-                                <h6>Get the items from api</h6>
                                 {catalogueList.map(c => (
 
                                     <div className="col-md-4" key={c.id}>
-
-                                        {/* 
-                                          Call the Catalogue item component and pass the props into it.
-                                        */}
+                                        <CatalogueItem catalogue={c} />
                                         
                                         <br></br>
                                     </div>
