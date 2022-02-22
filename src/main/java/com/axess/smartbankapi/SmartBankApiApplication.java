@@ -17,7 +17,7 @@ import com.axess.smartbankapi.service.RewardCatalogueService;
 
 @SpringBootApplication
 public class SmartBankApiApplication implements CommandLineRunner {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(SmartBankApiApplication.class);
 
 	@Autowired
@@ -32,46 +32,51 @@ public class SmartBankApiApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 
-		
+
 		LOGGER.info(this.userService.saveAllUsers(this.loadUsersData()));
 		LOGGER.info(this.rcService.saveAllItems(this.loadCatalogueData()));
 
 	}
-	
+
 	private List<RewardsCatalogue> loadCatalogueData() {
 		List<RewardsCatalogue> catalogueItems = new ArrayList<>();
-		
+
 		RewardsCatalogue item = new RewardsCatalogue();
+		item.setId(1);
 		item.setItem("Amazon Voucher");
 		item.setRedeemptionAmount(500);
 		item.setRedeemptionPoint(1500);
 		catalogueItems.add(item);
-		
+
 		item = new RewardsCatalogue();
+		item.setId(2);
 		item.setItem("Amazon Voucher");
 		item.setRedeemptionAmount(750);
 		item.setRedeemptionPoint(2500);
 		catalogueItems.add(item);
-		
+
 		item = new RewardsCatalogue();
+		item.setId(3);
 		item.setItem("Starbucks Voucher");
 		item.setRedeemptionAmount(350);
 		item.setRedeemptionPoint(1000);
 		catalogueItems.add(item);
-		
+
 		item = new RewardsCatalogue();
+		item.setId(4);
 		item.setItem("Walmart Voucher");
 		item.setRedeemptionAmount(500);
 		item.setRedeemptionPoint(1500);
 		catalogueItems.add(item);
-		
+
 		item = new RewardsCatalogue();
+		item.setId(5);
 		item.setItem("Uber Voucher");
 		item.setRedeemptionAmount(500);
 		item.setRedeemptionPoint(1500);
 		catalogueItems.add(item);
-		
-		
+
+
 		return catalogueItems;
 	}
 
@@ -87,7 +92,7 @@ public class SmartBankApiApplication implements CommandLineRunner {
 		user.setTotalRewardsGained(0);
 		user.setAvailableRedeemPoints(10000);
 		users.add(user);
-		
+
 		user = new CCUser();
 		user.setUserId("axess2");
 		user.setPassword("abc@123");
@@ -97,7 +102,7 @@ public class SmartBankApiApplication implements CommandLineRunner {
 		user.setTotalRewardsGained(0);
 		user.setAvailableRedeemPoints(10000);
 		users.add(user);
-		
+
 		user = new CCUser();
 		user.setUserId("axess3");
 		user.setPassword("abc@123");

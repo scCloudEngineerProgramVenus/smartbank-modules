@@ -8,9 +8,9 @@ import javax.persistence.Id;
 
 @Entity
 public class RewardsCatalogue {
-	
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	//@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 	private String item;
 	private double redeemptionPoint;
@@ -39,8 +39,8 @@ public class RewardsCatalogue {
 	public void setRedeemptionAmount(double redeemptionAmount) {
 		this.redeemptionAmount = redeemptionAmount;
 	}
-	
-	
-	
+
+
+
 
 }
