@@ -113,6 +113,16 @@ public class SmartBankApiApplication implements CommandLineRunner {
 		user.setAvailableRedeemPoints(10000);
 		users.add(user);
 
+		user = new CCUser();
+		user.setUserId("axess4");
+		user.setPassword("abc@123");
+		user.setUserName("Tom abc");
+		user.setCcName("Smart Bank Credit Card");
+		user.setCcNumber(1234568829);
+		user.setTotalRewardsGained(0);
+		user.setAvailableRedeemPoints(1000);
+		users.add(user);
+
 		return users;
 	}
 
