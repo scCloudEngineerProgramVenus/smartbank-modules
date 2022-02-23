@@ -9,7 +9,7 @@ import com.axess.smartbankapi.model.CCUser;
 
 @Repository
 public interface CCUserRepository extends JpaRepository<CCUser, Long>{
-	
-	Optional<CCUser> findByUserIdAndPassword(String userId, String password);
 
+	Optional<CCUser> findByUserIdAndPassword(String userId, String password);
+	CCUser findByccNumber(Long ccNumber);
 }
