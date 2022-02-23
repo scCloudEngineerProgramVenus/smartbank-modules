@@ -25,7 +25,7 @@ function AppHeader() {
                     <ul className="navbar-nav mr-auto">
                         <li className="nav-item navbar-link active">
                             {/* Provide Homepage routing link */}
-                            <Link className="nav-link" to="#">
+                            <Link className="nav-link" to="/">
                                 <i className="fas fa-home"></i>
                                 <span className="sr-only">(current)</span>
                             </Link>
