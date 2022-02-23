@@ -21,23 +21,19 @@ function CartItems() {
     }
 
     const purchaseOrder = () => {
-        /**
-         * pass appropriate attributes of orderdata
-         * quantity will be always 1.
-         */
+
          let orderData = {
-            quantity: 1
+            itemsRedeemed: cartItems,
+            quantity: 1,
+            ccNumber: loggedInUser.ccNumber,
+            totalPointsRedeemed: cartSummary.totalRedeemPoints,
+            totalAmountGained: cartSummary.totalAmount
         }
         axios.post(API_URL+"history/",orderData )
             .then ( response => {
-
-                 /**
-                 * insert appropriate code after order-purchase.
-                 * redirect to order confirm page
-                 * refresh the login details
-                 * call the appropriate method from the cart the context to update the cart details.
-                 */
-                
+                console.log(response);
+                afterPurchase();
+                history.push("/order-confirm");
 
             })
             .catch(error => {
