@@ -23,9 +23,10 @@ function Homepage() {
             Axios.get(API_URL + '/ccuser/getuserbyuserid?userId=' + userLogInContext.loggedInUser.ccNumber).then(response => {
 
                 // updating the login context
+                userLogInContext.setLoginUserDetails(response.data.body)
                 setLoggedInUser(response.data.body)
             })
-            console.log("here")
+
         }
       }, []);
 

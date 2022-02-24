@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { API_URL } from '../../Constants';
 import { LoginContext } from '../../contexts/LoginContext';
+import { CartContext } from '../../contexts/CartContext';
 
 function LoginPage(props) {
     let history = useHistory();
@@ -15,11 +16,12 @@ function LoginPage(props) {
 
     const [userId, setUserId] = useState('')
     const [password, setPassword] = useState('')
+    const cartContext = useContext(CartContext);
 
     useEffect(() => {
         console.log("setLoginUserDetails is: "+ setLoginUserDetails);
         console.log(isLoggedIn);
-
+        cartContext.afterPurchase();
 
     }, [])
 
@@ -73,7 +75,7 @@ function LoginPage(props) {
     }
 
 
-    
+
     return (
         <div className="login-page container">
 
