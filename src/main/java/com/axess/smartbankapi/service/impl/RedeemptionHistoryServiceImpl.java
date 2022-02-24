@@ -21,33 +21,33 @@ public class RedeemptionHistoryServiceImpl implements RedeemptionHistoryService 
 
 	@Autowired
 	private RedeemptionHistoryRepository historyRepo;
-	
+
 	@Autowired
 	private CCUserRepository ccUserRepo;
-	
-	
+
+
 	@Override
 	public String saveHistory(UserRedeemptionHistoryDto historyDto) throws RecordExistException, RecordNotCreatedException {
 		String message ="Item saved in history";
 		CCUser user = ccUserRepo.findById(historyDto.getCcNumber()).get();
 		user.setAvailableRedeemPoints(user.getAvailableRedeemPoints() - historyDto.getTotalPointsRedeemed());
-		user.setTotalRewardsGained(historyDto.getTotalAmountGained());
+		user.setTotalRewardsGained(user.getTotalRewardsGained() + historyDto.getTotalAmountGained());
 		ccUserRepo.save(user);
-		
+
 		historyDto.getItemsRedeemed().forEach(item ->{
-			
+
 			UserRedeemptionHistory historyData = new UserRedeemptionHistory();
 			historyData.setCatalogue(item);
 			historyData.setOrderdate(LocalDate.now());
 			historyData.setQuantity(historyDto.getQuantity());
 			historyData.setCcUser(user);
-			
+
 			historyRepo.save(historyData);
-			
-			
-			
+
+
+
 		});
-		
+
 		return message;
 	}
 
