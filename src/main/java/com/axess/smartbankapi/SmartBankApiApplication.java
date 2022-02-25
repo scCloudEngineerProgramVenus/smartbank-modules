@@ -32,9 +32,17 @@ public class SmartBankApiApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 
+		List<RewardsCatalogue> catalogueData = this.rcService.getAll();
+		List<CCUser> users = this.userService.getAllUsers();
+		if (catalogueData.size() == 0) {
+			LOGGER.info(this.rcService.saveAllItems(this.loadCatalogueData()));
+		}
+		if (users.size() == 0) {
+			LOGGER.info(this.userService.saveAllUsers(this.loadUsersData()));
+		}
 
-		LOGGER.info(this.userService.saveAllUsers(this.loadUsersData()));
-		LOGGER.info(this.rcService.saveAllItems(this.loadCatalogueData()));
+		//LOGGER.info(this.userService.saveAllUsers(this.loadUsersData()));
+		//LOGGER.info(this.rcService.saveAllItems(this.loadCatalogueData()));
 
 	}
 
