@@ -4,6 +4,12 @@ provider "aws" {
   secret_key = ""
 }
 
+module "vpc" {
+  source      = "./modules/VPC"
+  vpc_name    = "bobby-test"
+  region_name = var.aws_region
+}
+
 /*
 resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
@@ -74,7 +80,7 @@ resource "aws_subnet" "privatedb2" {
   }
   depends_on = [aws_vpc.main]
 }
-*/
+
 resource "aws_security_group" "all" {
   vpc_id = aws_vpc.main.id
   tags = {
@@ -146,9 +152,9 @@ resource "aws_security_group" "FEEC2" {
   }
   name = "venus-FE-instance"
   ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
     security_groups = ["${aws_security_group.FELB.id}"]
   }
   egress {
@@ -168,9 +174,9 @@ resource "aws_security_group" "BEEC2" {
   name = "venus-BE-instance"
 
   ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
+    from_port       = 8080
+    to_port         = 8080
+    protocol        = "tcp"
     security_groups = ["${aws_security_group.BELB.id}"]
   }
 
@@ -191,9 +197,9 @@ resource "aws_security_group" "DB" {
   name = "venus-DB"
 
   ingress {
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
     security_groups = ["${aws_security_group.BEEC2.id}"]
   }
   egress {
@@ -291,7 +297,7 @@ resource "aws_db_instance" "new" {
   engine_version      = "14.1"
   skip_final_snapshot = true
 }
-*/
+
 resource "aws_eip" "eip" {}
 
 resource "aws_eip" "eip2" {}
@@ -303,7 +309,7 @@ resource "aws_nat_gateway" "nat" {
   tags = {
     Name = "venus-nat-01"
   }
-  depends_on = [aws_internet_gateway.gw,aws_eip.eip]
+  depends_on = [aws_internet_gateway.gw, aws_eip.eip]
 }
 
 resource "aws_nat_gateway" "nat2" {
@@ -313,7 +319,7 @@ resource "aws_nat_gateway" "nat2" {
   tags = {
     Name = "venus-nat-02"
   }
-  depends_on = [aws_internet_gateway.gw,aws_eip.eip]
+  depends_on = [aws_internet_gateway.gw, aws_eip.eip]
 }
 
 module "venus_alb" {
@@ -340,159 +346,6 @@ module "venus_asg" {
   min_size            = 1
   desired_capacity    = 1
   alb_dns             = module.venus_alb.alb_dns
-  db_dns = aws_db_instance.new.endpoint
-}
-
-/*
-resource "aws_lb" "lb" {
-
-  subnet_mapping {
-    subnet_id     = aws_subnet.public.id
-  }
-    subnet_mapping {
-    subnet_id     = aws_subnet.public2.id
-  }
-   name = "venus-lb"
-   security_groups = [
-    aws_security_group.FELB.id,aws_security_group.BELB.id
-  ]
-
-
-depends_on = [aws_vpc.main,aws_subnet.public,aws_subnet.public2]
-}
-
-resource "aws_lb_target_group" "FE" {
- 
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.main.id
-  name = "venus-FE-TG"
-  depends_on = [aws_lb.lb]
-
-}
-
-resource "aws_lb_target_group" "BE" {
-
-  port     = 8080
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.main.id
-  name = "venus-BE-TG"
-  depends_on = [aws_lb.lb]
-}
-
-resource "aws_launch_template" "FE" {
-
-   name = "venus-FE-template"
-   instance_type = "t2.micro"
-   image_id      = "ami-041d49677629acc40"
-//   security_group_names = [
-//      "${aws_security_group.FEEC2.name}"
-//   ]
-  tags = {
-   Name = "venus-FE"
-  }
-
-}
-
-resource "aws_launch_template" "BE" {
-
-   name = "venus-BE-template"
-   instance_type = "t2.micro"
-   image_id      = "ami-041d49677629acc40"
-//   security_group_names = [
-//      "${aws_security_group.BEEC2.name}"
-//   ]
-  tags = {
-   Name = "venus-BE"
-  }
-
-}
-
-resource "aws_autoscaling_group" "FE" {
-vpc_zone_identifier = [aws_subnet.private.id, aws_subnet.private2.id]
-min_size = 1
-max_size = 1
-launch_template {
-   id      = aws_launch_template.FE.id
-   version = "$Latest"
-  }    
-depends_on = [aws_vpc.main,aws_subnet.private,aws_subnet.private2,aws_launch_template.FE] 
-name = "venus-FE-ASG"
-}
-
-resource "aws_autoscaling_group" "BE" {
-vpc_zone_identifier = [aws_subnet.private.id, aws_subnet.private2.id]
-min_size = 1
-max_size = 1   
-launch_template {
-    id      = aws_launch_template.BE.id
-    version = "$Latest"
-  }
-depends_on = [aws_vpc.main,aws_subnet.private,aws_subnet.private2,aws_launch_template.BE] 
-name = "venus-BE-ASG"
-}
-*/
-
-
-
-/*
-resource "aws_lb_target_group_attachment" "FE" {
-  target_group_arn = aws_lb_target_group.FE.arn
-  target_id        = aws_launch_template.FE
-  port             = 80
-  depends_on = [aws_lb_target_group.FE,aws_launch_template.FE]
-}
-
-resource "aws_lb_target_group_attachment" "BE" {
-  target_group_arn = aws_lb_target_group.BE.arn
-  target_id        = aws_launch_template.BE
-  port             = 8080
-  depends_on = [aws_lb_target_group.BE,aws_launch_template.BE]
-}
-
-resource "aws_lb_listener" "FE" {
-  load_balancer_arn = aws_lb.lb.arn
-  port              = "80"
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.FE.arn
-  }
-  depends_on = [aws_lb.lb,aws_lb_target_group.FE]
-}
-
-resource "aws_lb_listener" "BE" {
-  load_balancer_arn = aws_lb.lb.arn
-  port              = "8080"
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.BE.arn
-  }
-  depends_on = [aws_lb.lb,aws_lb_target_group.BE]
-}
-
-resource "aws_instance" "FE" {
-launch_template {
-    id      = aws_launch_template.FE.id
-    version = "$Latest"
-  }
-  depends_on = [aws_launch_template.FE]
-  tags = {
-   Name = "venus-FE"
-  }
-}
-
-resource "aws_instance" "BE" {
-launch_template {
-    id      = aws_launch_template.BE.id
-    version = "$Latest"
-  }
-  depends_on = [aws_subnet.private]
-  tags = {
-   Name = "venus-BE"
-  }
+  db_dns              = aws_db_instance.new.endpoint
 }
 */
