@@ -5,6 +5,7 @@ resource "aws_vpc" "main" {
   }
 }
 
+// Declare subnet parameters
 locals {
   public_subnets = [
     {
@@ -87,16 +88,71 @@ resource "aws_internet_gateway" "gw" {
   }
 }
 
-resource "aws_eip" "eip" {}
+module "natGateways" {
+  source           = "./NATgateway"
+  count            = length(module.public_subnets)
+  name             = "venus-nat-${count.index + 1}"
+  public_subnet_id = module.public_subnets[count.index].id
+}
 
-resource "aws_eip" "eip2" {}
-
-resource "aws_nat_gateway" "nat" {
-  allocation_id = aws_eip.eip.id
-  subnet_id     = aws_subnet.public.id
-
-  tags = {
-    Name = "${var.vpc_name}-nat-01"
+locals {
+  public_subnet_route_table = {
+    vpc_id     = aws_vpc.main.id
+    name       = "venus-public-route"
+    gateway_id = aws_internet_gateway.gw.id
   }
-  depends_on = [aws_internet_gateway.gw, aws_eip.eip]
+
+  private_subnets_route_tables = [
+    {
+      vpc_id     = aws_vpc.main.id
+      name       = "venus-private-route-01"
+      gateway_id = module.natGateways[0].id
+    },
+    {
+      vpc_id     = aws_vpc.main.id
+      name       = "venus-private-route-02"
+      gateway_id = module.natGateways[1].id
+    }
+  ]
+}
+
+module "public_subnet_route_table" {
+  source     = "./RouteTable"
+  vpc_id     = local.public_subnet_route_table.vpc_id
+  name       = local.public_subnet_route_table.name
+  gateway_id = local.public_subnet_route_table.gateway_id
+}
+
+module "private_subnet_route_tables" {
+  source     = "./RouteTable"
+  count      = length(local.private_subnets_route_tables)
+  vpc_id     = local.private_subnets_route_tables[count.index].vpc_id
+  name       = local.private_subnets_route_tables[count.index].name
+  gateway_id = local.private_subnets_route_tables[count.index].gateway_id
+}
+
+resource "aws_route_table" "dbprivate" {
+
+  vpc_id = aws_vpc.main.id
+  tags = {
+    Name = "venus-db-private-route"
+  }
+}
+
+resource "aws_route_table_association" "public" {
+  count          = length(module.public_subnets)
+  subnet_id      = module.public_subnets[count.index].id
+  route_table_id = module.public_subnet_route_table.id
+}
+
+resource "aws_route_table_association" "private" {
+  count          = length(module.private_subnets)
+  subnet_id      = module.private_subnets[count.index].id
+  route_table_id = module.private_subnet_route_tables[count.index].id
+}
+
+resource "aws_route_table_association" "db" {
+  count          = length(module.db_subnets)
+  subnet_id      = module.db_subnets[count.index].id
+  route_table_id = aws_route_table.dbprivate.id
 }

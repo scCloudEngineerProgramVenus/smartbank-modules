@@ -19,76 +19,28 @@ module "vpc" {
   region_name = var.aws_region
 }
 
+module "venus_alb" {
+  source    = "./modules/ApplicationLoadBalancer"
+  alb_name  = "Venus-test-alb"
+  vpc_id    = module.vpc.id
+  subnet_id = module.vpc.public_subnets_id[*].id
+}
+
+module "venus_asg" {
+  source              = "./modules/AutoScalingGroups"
+  vpc_id              = module.vpc.id
+  alb_sg_id           = module.venus_alb.alb_sg_id
+  subnets             = module.vpc.private_subnets_id[*].id
+  FE_target_group_arn = module.venus_alb.FE_target_group_arn
+  BE_target_group_arn = module.venus_alb.BE_target_group_arn
+  max_size            = 2
+  min_size            = 1
+  desired_capacity    = 1
+  alb_dns             = module.venus_alb.alb_dns
+  db_dns              = "test"
+}
+
 /*
-resource "aws_vpc" "main" {
-  cidr_block = "10.0.0.0/16"
-  tags = {
-    Name = "Venus"
-  }
-}
-
-resource "aws_subnet" "public" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.0.0/24"
-  availability_zone = "ca-central-1a"
-  tags = {
-    Name = "venus-public-subnet-01"
-  }
-  depends_on = [aws_vpc.main]
-}
-
-resource "aws_subnet" "public2" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.10.0/24"
-  availability_zone = "ca-central-1b"
-  tags = {
-    Name = "venus-public-subnet-02"
-  }
-  depends_on = [aws_vpc.main]
-}
-
-resource "aws_subnet" "private" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.20.0/24"
-  availability_zone = "ca-central-1a"
-  tags = {
-    Name = "venus-private-subnet-01"
-  }
-  depends_on = [aws_vpc.main]
-}
-
-resource "aws_subnet" "private2" {
-
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.30.0/24"
-  availability_zone = "ca-central-1b"
-  tags = {
-    Name = "venus-private-subnet-02"
-  }
-  depends_on = [aws_vpc.main]
-}
-
-resource "aws_subnet" "privatedb" {
-
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.40.0/24"
-  availability_zone = "ca-central-1a"
-  tags = {
-    Name = "venus-db-private-subnet-01"
-  }
-  depends_on = [aws_vpc.main]
-}
-
-resource "aws_subnet" "privatedb2" {
-
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.50.0/24"
-  availability_zone = "ca-central-1b"
-  tags = {
-    Name = "venus-db-private-subnet-02"
-  }
-  depends_on = [aws_vpc.main]
-}
 
 resource "aws_security_group" "all" {
   vpc_id = aws_vpc.main.id
