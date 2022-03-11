@@ -1,6 +1,8 @@
 variable "vpc_id" {}
 
-variable "alb_sg_id" {}
+variable "FE_sg_id" {}
+
+variable "BE_sg_id" {}
 
 variable "subnets" {}
 
@@ -14,6 +16,6 @@ variable "min_size" {}
 
 variable "desired_capacity" {}
 
-variable "alb_dns" {}
+variable "alb_endpoint" {}
 
-variable "db_dns" {}
+variable "db_endpoint" {}

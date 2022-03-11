@@ -26,18 +26,56 @@ module "venus_alb" {
   subnet_id = module.vpc.public_subnets_id[*].id
 }
 
+module "FE_instance_sg" {
+  source      = "./modules/SecurityGroups"
+  description = "Venus FE Instance Security Group"
+  sg_name     = "Venus FE instance test"
+  vpc_id      = module.vpc.id
+  from_port   = 80
+  to_port     = 80
+  from_sg_id  = module.venus_alb.alb_sg_id
+}
+
+module "BE_instance_sg" {
+  source      = "./modules/SecurityGroups"
+  description = "Venus BE Instance Security Group"
+  sg_name     = "Venus BE instance test"
+  vpc_id      = module.vpc.id
+  from_port   = 8080
+  to_port     = 8080
+  from_sg_id  = module.venus_alb.alb_sg_id
+}
+
+module "DB_sg" {
+  source      = "./modules/SecurityGroups"
+  description = "Venus DB Security Group"
+  sg_name     = "Venus DB test"
+  vpc_id      = module.vpc.id
+  from_port   = 5432
+  to_port     = 5432
+  from_sg_id  = module.BE_instance_sg.id
+}
+
+module "db" {
+  source              = "./modules/DB"
+  subnet_ids          = module.vpc.db_subnets_id[*].id
+  name                = "venus-db"
+  security_groups_ids = ["${module.DB_sg.id}"]
+}
+
 module "venus_asg" {
   source              = "./modules/AutoScalingGroups"
   vpc_id              = module.vpc.id
-  alb_sg_id           = module.venus_alb.alb_sg_id
+  FE_sg_id            = module.FE_instance_sg.id
+  BE_sg_id            = module.BE_instance_sg.id
   subnets             = module.vpc.private_subnets_id[*].id
   FE_target_group_arn = module.venus_alb.FE_target_group_arn
   BE_target_group_arn = module.venus_alb.BE_target_group_arn
   max_size            = 2
   min_size            = 1
   desired_capacity    = 1
-  alb_dns             = module.venus_alb.alb_dns
-  db_dns              = "test"
+  alb_endpoint        = module.venus_alb.alb_dns
+  db_endpoint         = module.db.endpoint
 }
 
 /*

@@ -12,7 +12,7 @@ resource "aws_security_group" "instance_sg" {
     from_port       = var.from_port
     to_port         = var.to_port
     protocol        = "tcp"
-    security_groups = ["${var.alb_sg_id}"]
+    security_groups = ["${var.from_sg_id}"]
   }
 
   # outbound internet access

@@ -1,34 +1,12 @@
-module "FE_instance_sg" {
-  source      = "./SecurityGroups"
-  description = "Venus FE Instance Security Group"
-  sg_name     = "Venus FE instance test"
-  vpc_id      = var.vpc_id
-  from_port   = 80
-  to_port     = 80
-  alb_sg_id   = var.alb_sg_id
-}
-
-module "BE_instance_sg" {
-  source      = "./SecurityGroups"
-  description = "Venus BE Instance Security Group"
-  sg_name     = "Venus BE instance test"
-  vpc_id      = var.vpc_id
-  from_port   = 8080
-  to_port     = 8080
-  alb_sg_id   = var.alb_sg_id
-}
-
 module "launch_template_FE" {
   source              = "./LaunchTemplate"
   name                = "Venus-FE-template-test"
   description         = "Venus FE template"
   user_data_file_name = "FEuserData.sh"
-  sg_id               = module.FE_instance_sg.id
+  sg_id               = var.FE_sg_id
   tag                 = "Venus FE"
-  alb_dns             = var.alb_dns
+  endpoint            = var.alb_endpoint
   image_id            = "ami-041d49677629acc40"
-  db_dns              = var.db_dns
-  //  key_name            = "bobby-tokyo"
 }
 
 module "launch_template_BE" {
@@ -36,12 +14,10 @@ module "launch_template_BE" {
   name                = "Venus-BE-template-test"
   description         = "Venus BE template"
   user_data_file_name = "BEuserData.sh"
-  sg_id               = module.BE_instance_sg.id
+  sg_id               = var.BE_sg_id
   tag                 = "Venus BE"
-  alb_dns             = var.alb_dns
+  endpoint            = var.db_endpoint
   image_id            = "ami-041d49677629acc40"
-  db_dns              = var.db_dns
-  //  key_name            = "bobby-tokyo"
 }
 
 resource "aws_autoscaling_group" "FE_asg" {

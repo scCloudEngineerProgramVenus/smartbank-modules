@@ -17,5 +17,5 @@ variable "from_port" {
 variable "to_port" {
 }
 
-variable "alb_sg_id" {
+variable "from_sg_id" {
 }
