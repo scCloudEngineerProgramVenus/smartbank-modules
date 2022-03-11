@@ -1,7 +1,16 @@
+// Enter the following commands in terminal
+// Mac user:
+// export TF_VAR_access_key=(the access_key)
+// export TF_VAR_secret_key=(the secret_key)
+// terraform plan/apply
+// Windows user:
+// $env:TF_VAR_access_key="access_key"
+// $env:TF_VAR_secret_key="secret_key"
+// terraform plan/apply
 provider "aws" {
   region     = var.aws_region
-  access_key = ""
-  secret_key = ""
+  access_key = var.access_key
+  secret_key = var.secret_key
 }
 
 module "vpc" {
