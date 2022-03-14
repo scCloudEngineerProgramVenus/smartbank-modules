@@ -6,7 +6,8 @@ module "launch_template_FE" {
   sg_id               = var.FE_sg_id
   tag                 = "Venus FE"
   endpoint            = var.alb_endpoint
-  image_id            = "ami-041d49677629acc40"
+  image_id            = "ami-0b6daa61e4de02069"
+  iam_role            = "venus-IAM-role"
 }
 
 module "launch_template_BE" {
@@ -17,7 +18,8 @@ module "launch_template_BE" {
   sg_id               = var.BE_sg_id
   tag                 = "Venus BE"
   endpoint            = var.db_endpoint
-  image_id            = "ami-041d49677629acc40"
+  image_id            = "ami-0b6daa61e4de02069"
+  iam_role            = "venus-IAM-role"
 }
 
 resource "aws_autoscaling_group" "FE_asg" {

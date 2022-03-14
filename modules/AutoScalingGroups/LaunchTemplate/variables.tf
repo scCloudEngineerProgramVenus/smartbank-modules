@@ -15,6 +15,9 @@ variable "endpoint" {}
 variable "sg_id" {}
 
 variable "user_data_file_name" {}
+
+variable "iam_role" {}
+
 /*
 variable "key_name" {
   default = "Venus"

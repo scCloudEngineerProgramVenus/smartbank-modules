@@ -14,6 +14,12 @@ resource "aws_launch_template" "Venus_launch_template" {
     ))
 */
 
+  update_default_version = true
+
+  iam_instance_profile {
+    name = var.iam_role
+  }
+
   user_data = base64encode(templatefile("${path.module}./userData/${var.user_data_file_name}", {
     address = var.endpoint
     }
@@ -32,5 +38,6 @@ resource "aws_launch_template" "Venus_launch_template" {
     tags = {
       Name = var.tag
     }
+
   }
 }
